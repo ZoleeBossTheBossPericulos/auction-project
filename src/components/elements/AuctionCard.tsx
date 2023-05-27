@@ -25,16 +25,23 @@ export const AuctionCard = ({
   description,
 }: IAcutionCard) => {
   return (
-    <Card>
+    <Card className="shadow-md !bg-amber-100">
       <CardHeader title={name} subheader={new Date().toDateString()} />
-      <CardMedia component="img" image={thumbnail} alt={name} />
+      <CardMedia
+        component="img"
+        image={thumbnail}
+        alt={name}
+        className="max-h-72 object-contain"
+      />
       <CardContent>
-        <Typography variant="body2">{description}</Typography>
+        <Typography variant="body2" className="max-h-24 overflow-y-auto">
+          {description}
+        </Typography>
       </CardContent>
       <div className="flex justify-between">
         <CardActions disableSpacing>
           <IconButton
-            className="!rounded-sm hover:!bg-white"
+            className="!rounded-sm hover:!bg-white !text-base"
             disableRipple
             disableFocusRipple
             disableTouchRipple
