@@ -1,5 +1,13 @@
-import Image from "next/image";
-import Button from "./Button";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  IconButton,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 
 interface IAcutionCard {
   name: string;
@@ -17,32 +25,29 @@ export const AuctionCard = ({
   description,
 }: IAcutionCard) => {
   return (
-    <div className="bg-[#B7B6C1] w-fit text-black flex flex-col items-center max-w-[400px] px-4 py-2 rounded-md">
-      <Image
-        src={thumbnail}
-        alt={"product-image"}
-        width={200}
-        height={400}
-        className="mix-blend-multiply"
-      />
-      <h4 className="text-2xl font-semibold drop-shadow-lg shadow-black">
-        {name}
-      </h4>
-      <p className="mt-4 mb-8">{description}</p>
-
-      <div className="flex justify-between items-center w-full">
-        <div className="flex justify-start items-center">
-          {startPrice === actualPrice ? (
-            <p>Starting price:</p>
-          ) : (
-            <p>Actual price:</p>
-          )}
-          <Button className="ml-2 !hover:opacity-100" disabled>
-            877
-          </Button>
-        </div>
-        <Button>Bid</Button>
+    <Card>
+      <CardHeader title={name} subheader={new Date().toDateString()} />
+      <CardMedia component="img" image={thumbnail} alt={name} />
+      <CardContent>
+        <Typography variant="body2">{description}</Typography>
+      </CardContent>
+      <div className="flex justify-between">
+        <CardActions disableSpacing>
+          <IconButton
+            className="!rounded-sm hover:!bg-white"
+            disableRipple
+            disableFocusRipple
+            disableTouchRipple
+          >
+            {actualPrice > startPrice ? "Actual price: " : "Starting price: "}
+            {actualPrice > startPrice ? actualPrice : startPrice}€
+          </IconButton>
+        </CardActions>
+        <CardActions disableSpacing>
+          <TextField id="bid" label="Your bid (€)" variant="outlined" />
+          <IconButton className="!rounded-sm !mx-4">Bid</IconButton>
+        </CardActions>
       </div>
-    </div>
+    </Card>
   );
 };
