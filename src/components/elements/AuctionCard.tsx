@@ -8,12 +8,14 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
+import { useState } from "react";
 
-interface IAcutionCard {
+export interface IAcutionCard {
   name: string;
   startPrice: number;
   actualPrice: number;
   thumbnail: string;
+  onBid: (newBid: number) => void;
   description?: string;
 }
 
@@ -23,7 +25,10 @@ export const AuctionCard = ({
   startPrice,
   thumbnail,
   description,
+  onBid,
 }: IAcutionCard) => {
+  const [bidValue, setBidValue] = useState<number>(0);
+
   return (
     <Card className="shadow-md !bg-amber-100">
       <CardHeader title={name} subheader={new Date().toDateString()} />
@@ -51,8 +56,29 @@ export const AuctionCard = ({
           </IconButton>
         </CardActions>
         <CardActions disableSpacing>
-          <TextField id="bid" label="Your bid (€)" variant="outlined" />
-          <IconButton className="!rounded-sm !mx-4">Bid</IconButton>
+          <TextField
+            id="bid"
+            type="number"
+            InputProps={{
+              inputProps: {
+                min: actualPrice + 1,
+              },
+            }}
+            label="Your bid (€)"
+            variant="outlined"
+            value={bidValue}
+            onChange={(newValue) => {
+              setBidValue(Number(newValue.target.value));
+            }}
+          />
+          <IconButton
+            className="!rounded-sm !mx-4"
+            onClick={() => {
+              onBid(bidValue);
+            }}
+          >
+            Bid
+          </IconButton>
         </CardActions>
       </div>
     </Card>
