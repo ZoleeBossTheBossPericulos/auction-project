@@ -17,6 +17,7 @@ export interface IAcutionCard {
   thumbnail: string;
   onBid: (newBid: number) => void;
   description?: string;
+  disabled: boolean;
 }
 
 export const AuctionCard = ({
@@ -26,6 +27,7 @@ export const AuctionCard = ({
   thumbnail,
   description,
   onBid,
+  disabled,
 }: IAcutionCard) => {
   const [bidValue, setBidValue] = useState<number>(0);
 
@@ -70,6 +72,7 @@ export const AuctionCard = ({
             onChange={(newValue) => {
               setBidValue(Number(newValue.target.value));
             }}
+            disabled={disabled}
           />
           <IconButton
             className="!rounded-sm !mx-4"

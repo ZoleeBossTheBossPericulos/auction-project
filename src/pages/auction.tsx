@@ -53,6 +53,7 @@ export default function Auction() {
   //   fetcher
   // );
   const [data, setData] = useState<IAcutionCard | undefined>();
+  const [name, setName] = useState<string | null>(null);
   const socket = io("http://localhost:6060");
 
   socket.on("send-data2", (auctionData) => {
@@ -68,8 +69,17 @@ export default function Auction() {
     });
   }, []);
 
+  useEffect(() => {
+    setName(localStorage.getItem("name"));
+  }, [localStorage]);
+
   return (
     <Layout title={"Auction"}>
+      <h1 className="text-2xl mx-4">
+        {name === null || name === ""
+          ? `Please enter your name on home to bid!`
+          : `Welcome ${name}! Place your bid!`}
+      </h1>
       <div className="flex h-[80vh] mx-10">
         <div className="flex items-center justify-center w-full basis-2/3">
           <div className="px-20 py-10">
@@ -87,6 +97,7 @@ export default function Auction() {
                   console.log(newBid);
                 }}
                 description={data.description}
+                disabled={name === null || name === ""}
               />
             )}
           </div>

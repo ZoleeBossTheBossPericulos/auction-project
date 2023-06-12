@@ -1,6 +1,15 @@
 import { Layout } from "@/components/layout/Layout";
+import TextField from "@material-ui/core/TextField";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function Home() {
+  const [name, setName] = useState<string>("");
+
+  const handleSaveName = () => {
+    localStorage.setItem("name", name);
+  };
+
   return (
     <Layout title={"Home"}>
       <div className="flex flex-col items-center justify-center h-[80vh]">
@@ -10,13 +19,25 @@ export default function Home() {
         <p className="text-lg text-gray-600 mb-8">
           Explore a wide range of auctions and bid on your favorite items.
         </p>
-        <div>
-          <button className="px-6 py-3 bg-amber-500 hover:bg-amber-600 mr-4 text-white rounded-md shadow-lg">
-            Get Started
-          </button>
-          <button className="px-6 py-3 bg-slate-500 hover:bg-slate-600 text-white rounded-md shadow-lg">
-            Log in
-          </button>
+        <div className="flex items-center">
+          <TextField
+            id="name"
+            type="text"
+            label="Your name for bidding"
+            variant="outlined"
+            value={name}
+            onChange={(newValue) => {
+              setName(newValue.target.value);
+            }}
+          />
+          <Link href={"/auction"}>
+            <button
+              className="px-6 py-3 mx-4 bg-amber-500 hover:bg-amber-600 mr-4 text-white rounded-md shadow-lg"
+              onClick={handleSaveName}
+            >
+              To the auction
+            </button>
+          </Link>
         </div>
       </div>
     </Layout>
