@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface IAcutionCard {
   name: string;
@@ -18,6 +18,9 @@ export interface IAcutionCard {
   onBid: (newBid: number) => void;
   description?: string;
   disabled: boolean;
+  sold: boolean;
+  highestBidder: string;
+  lastBid: string;
 }
 
 export const AuctionCard = ({
@@ -28,8 +31,36 @@ export const AuctionCard = ({
   description,
   onBid,
   disabled,
+  highestBidder,
+  sold,
+  lastBid,
 }: IAcutionCard) => {
   const [bidValue, setBidValue] = useState<number>(0);
+  const [remainingTime, setRemainingTime] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentTime = new Date().getTime();
+      const targetTime = new Date(lastBid).getTime() + 60000;
+      const difference = targetTime - currentTime;
+
+      if (difference > 0) {
+        const minutes = Math.floor(
+          (difference % (1000 * 60 * 60)) / (1000 * 60)
+        );
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        setRemainingTime(minutes * 60 + seconds);
+      } else {
+        // Counter reached the target datetime
+        setRemainingTime(0);
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [lastBid]);
 
   return (
     <Card className="shadow-md !bg-amber-100">
@@ -44,6 +75,19 @@ export const AuctionCard = ({
         <Typography variant="body2" className="max-h-24 overflow-y-auto">
           {description}
         </Typography>
+        <Typography
+          variant="body2"
+          className={`max-h-24 overflow-y-auto ${
+            highestBidder === localStorage.getItem("name") && "text-green-600"
+          }`}
+        >
+          Highest bid: {highestBidder}
+        </Typography>
+        <div>
+          <span className={`${remainingTime % 60 < 20 && "text-red-500"}`}>
+            Remaining time to bid: {remainingTime % 60}s
+          </span>
+        </div>
       </CardContent>
       <div className="flex justify-between">
         <CardActions disableSpacing>
@@ -72,7 +116,7 @@ export const AuctionCard = ({
             onChange={(newValue) => {
               setBidValue(Number(newValue.target.value));
             }}
-            disabled={disabled}
+            disabled={disabled || sold}
           />
           <IconButton
             className="!rounded-sm !mx-4"

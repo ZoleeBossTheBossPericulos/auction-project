@@ -1,8 +1,5 @@
 import { AuctionCard, IAcutionCard } from "@/components/elements/AuctionCard";
-import ChatSection from "@/components/elements/ChatSection";
 import { Layout } from "@/components/layout/Layout";
-import useSWR from "swr";
-import vintageMirror from "../../public/vintageMirror.jpeg";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 
@@ -65,6 +62,7 @@ export default function Auction() {
       console.log("Connected to the server");
     });
     socket.on("send-data", (auctionData) => {
+      console.log(auctionData);
       setData(auctionData[0]);
     });
   }, []);
@@ -93,16 +91,20 @@ export default function Auction() {
                   socket.emit("raise", {
                     newBidValue: newBid,
                     name: "Desk",
+                    highestBidder: localStorage.getItem("name"),
+                    lastBid: new Date().toISOString(),
                   });
-                  console.log(newBid);
                 }}
                 description={data.description}
                 disabled={name === null || name === ""}
+                sold={data.sold}
+                highestBidder={data.highestBidder}
+                lastBid={data.lastBid}
               />
             )}
           </div>
         </div>
-        <div className="bg-slate-700 rounded-md py-2">/ </div>
+        <div className="bg-slate-700 rounded-md py-2"></div>
       </div>
     </Layout>
   );
