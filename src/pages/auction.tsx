@@ -3,39 +3,6 @@ import { Layout } from "@/components/layout/Layout";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 
-const generateRandomColor = () => {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
-const generateRandomMessages = (count: number) => {
-  const messages = [];
-  const senders = ["Alice", "Bob", "Charlie"];
-  const loremIpsum =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet.";
-
-  for (let i = 0; i < count; i++) {
-    const randomSender = senders[Math.floor(Math.random() * senders.length)];
-    const randomMessage = loremIpsum.substring(
-      0,
-      Math.floor(Math.random() * 50) + 10
-    );
-    const randomColor = generateRandomColor();
-
-    messages.push({
-      from: randomSender,
-      message: randomMessage,
-      color: randomColor,
-    });
-  }
-
-  return messages;
-};
-
 export default function Auction() {
   // const randomMessages = generateRandomMessages(115);
 
@@ -62,7 +29,6 @@ export default function Auction() {
       console.log("Connected to the server");
     });
     socket.on("send-data", (auctionData) => {
-      console.log(auctionData);
       setData(auctionData[0]);
     });
   }, []);

@@ -1,12 +1,21 @@
+import { MessageProps } from "@/pages/chat";
 import { IconButton, TextField } from "@material-ui/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { ChatBubble } from "./ChatBubble";
 
 type ChatSectionProps = {
-  messages: { from: string; message: string; color: string }[];
+  messages: MessageProps[];
+  message: string;
+  handleMessage: (newValue: string) => void;
+  handleSendMessage: () => void;
 };
 
-const ChatSection: React.FC<ChatSectionProps> = ({ messages }) => {
+const ChatSection: React.FC<ChatSectionProps> = ({
+  messages,
+  handleMessage,
+  handleSendMessage,
+  message,
+}) => {
   return (
     <div className="flex flex-col px-10">
       <h1 className="text-xl font-bold mb-2">Chat section</h1>
@@ -30,8 +39,15 @@ const ChatSection: React.FC<ChatSectionProps> = ({ messages }) => {
           label="Your chat message"
           variant="standard"
           className="basis-2/3"
+          value={message}
+          onChange={(newValue) => handleMessage(newValue.target.value)}
         />
-        <IconButton className="!rounded-sm !mx-4 basis-1/3">Send</IconButton>
+        <IconButton
+          className="!rounded-sm !mx-4 basis-1/3"
+          onClick={() => handleSendMessage()}
+        >
+          Send
+        </IconButton>
       </div>
     </div>
   );

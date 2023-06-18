@@ -1,5 +1,7 @@
 import ChatSection from "@/components/elements/ChatSection";
 import { Layout } from "@/components/layout/Layout";
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
 const generateRandomColor = () => {
   const letters = "0123456789ABCDEF";
@@ -10,37 +12,48 @@ const generateRandomColor = () => {
   return color;
 };
 
-const generateRandomMessages = (count: number) => {
-  const messages = [];
-  const senders = ["Alice", "Bob", "Charlie"];
-  const loremIpsum =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet.";
-
-  for (let i = 0; i < count; i++) {
-    const randomSender = senders[Math.floor(Math.random() * senders.length)];
-    const randomMessage = loremIpsum.substring(
-      0,
-      Math.floor(Math.random() * 50) + 10
-    );
-    const randomColor = generateRandomColor();
-
-    messages.push({
-      from: randomSender,
-      message: randomMessage,
-      color: randomColor,
-    });
-  }
-
-  return messages;
+export type MessageProps = {
+  from: string;
+  message: string;
+  color: string;
 };
 
 export default function Home() {
-  const randomMessages = generateRandomMessages(115);
+  const [messages, setMessages] = useState<MessageProps[]>([]);
+  const [message, setMessage] = useState<string>("");
+  const [name, setName] = useState<string | null>(null);
+  const socket = io("http://localhost:6060");
+
+  socket.on("chatMessage", (newMessage) => {
+    setMessages([...messages, newMessage]);
+  });
+
+  useEffect(() => {
+    setName(localStorage.getItem("name"));
+  }, [localStorage]);
 
   return (
     <Layout title={"Chat"}>
+      <h1 className="text-2xl mx-4">
+        {name === null || name === ""
+          ? `Please enter your name on home to bid!`
+          : `Welcome ${name}! Place your bid!`}
+      </h1>
       <div className="bg-slate-700 rounded-md py-2 mx-20">
-        <ChatSection messages={randomMessages} />
+        <ChatSection
+          messages={messages}
+          message={message}
+          handleMessage={setMessage}
+          handleSendMessage={() => {
+            socket.emit("send-message", {
+              message: message,
+              from: localStorage.getItem("name"),
+              color: generateRandomColor(),
+            });
+            console.log("asdas");
+            setMessage("");
+          }}
+        />
       </div>
     </Layout>
   );
