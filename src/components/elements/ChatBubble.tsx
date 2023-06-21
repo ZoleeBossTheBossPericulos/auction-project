@@ -13,7 +13,7 @@ export const ChatBubble = ({ color, from, message }: IChatBubble) => {
       >
         {message}
       </div>
-      <div className="ml-2 text-gray-500">{from}</div>
+      <div className="ml-2 text-gray-500"> - {from}</div>
     </div>
   );
 };

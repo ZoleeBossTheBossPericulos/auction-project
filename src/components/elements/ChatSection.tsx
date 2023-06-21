@@ -1,6 +1,6 @@
 import { MessageProps } from "@/pages/chat";
 import { IconButton, TextField } from "@material-ui/core";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ChatBubble } from "./ChatBubble";
 
 type ChatSectionProps = {
@@ -16,13 +16,14 @@ const ChatSection: React.FC<ChatSectionProps> = ({
   handleSendMessage,
   message,
 }) => {
+  const [name, setName] = useState<string | null>(null);
+  useEffect(() => {
+    setName(localStorage.getItem("name"));
+  }, [localStorage]);
+
   return (
-    <div className="flex flex-col px-10">
+    <div className="flex flex-col px-10 min-h-[80vh] justify-between">
       <h1 className="text-xl font-bold mb-2">Chat section</h1>
-      <p className="mb-4 text-sm">
-        Here you will see the conversation and some additional informations from
-        the current bid.
-      </p>
       <div className="flex flex-col max-h-[55vh] gap-1 overflow-y-auto px-2">
         {messages.map((message, index) => (
           <ChatBubble
@@ -45,6 +46,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({
         <IconButton
           className="!rounded-sm !mx-4 basis-1/3"
           onClick={() => handleSendMessage()}
+          disabled={name === null || name === ""}
         >
           Send
         </IconButton>

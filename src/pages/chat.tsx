@@ -21,24 +21,21 @@ export type MessageProps = {
 export default function Home() {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [message, setMessage] = useState<string>("");
-  const [name, setName] = useState<string | null>(null);
   const socket = io("http://localhost:6060");
 
-  socket.on("chatMessage", (newMessage) => {
-    setMessages([...messages, newMessage]);
-  });
-
   useEffect(() => {
-    setName(localStorage.getItem("name"));
-  }, [localStorage]);
+    socket.connect();
+    socket.on("chatMessage", (newMessage) => {
+      console.log(messages);
+      setMessages([...messages, newMessage]);
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, [messages]);
 
   return (
     <Layout title={"Chat"}>
-      <h1 className="text-2xl mx-4">
-        {name === null || name === ""
-          ? `Please enter your name on home to bid!`
-          : `Welcome ${name}! Place your bid!`}
-      </h1>
       <div className="bg-slate-700 rounded-md py-2 mx-20">
         <ChatSection
           messages={messages}
@@ -50,7 +47,6 @@ export default function Home() {
               from: localStorage.getItem("name"),
               color: generateRandomColor(),
             });
-            console.log("asdas");
             setMessage("");
           }}
         />

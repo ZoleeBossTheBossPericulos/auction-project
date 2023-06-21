@@ -69,7 +69,7 @@ export const AuctionCard = ({
         component="img"
         image={thumbnail}
         alt={name}
-        className="max-h-72 !object-contain"
+        className="max-h-72 !object-contain mix-blend-multiply"
       />
       <CardContent>
         <Typography variant="body2" className="max-h-24 overflow-y-auto">

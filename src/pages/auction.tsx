@@ -4,18 +4,6 @@ import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 
 export default function Auction() {
-  // const randomMessages = generateRandomMessages(115);
-
-  // const fetcher = async (url: string) => {
-  //   const response = await fetch(url);
-  //   const data = await response.json();
-  //   return data;
-  // };
-
-  // const { data } = useSWR(
-  //   `${process.env.NEXT_PUBLIC_API_URL as string}/items`,
-  //   fetcher
-  // );
   const [data, setData] = useState<IAcutionCard | undefined>();
   const [name, setName] = useState<string | null>(null);
   const socket = io("http://localhost:6060");
@@ -39,13 +27,13 @@ export default function Auction() {
 
   return (
     <Layout title={"Auction"}>
-      <h1 className="text-2xl mx-4">
+      <h1 className="text-2xl mx-4 text-center font-bold py-4">
         {name === null || name === ""
-          ? `Please enter your name on home to bid!`
+          ? "Please enter your name on the homepage to bid!"
           : `Welcome ${name}! Place your bid!`}
       </h1>
       <div className="flex h-[80vh] mx-10">
-        <div className="flex items-center justify-center w-full basis-2/3">
+        <div className="flex items-center justify-center w-full">
           <div className="px-20 py-10">
             {data && (
               <AuctionCard
