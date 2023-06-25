@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from "react";
 
 export interface IAcutionCard {
+  _id: string;
   name: string;
   startPrice: number;
   actualPrice: number;
@@ -26,6 +27,7 @@ export interface IAcutionCard {
 
 export const AuctionCard = ({
   actualPrice,
+  _id,
   name,
   startPrice,
   thumbnail,
@@ -69,7 +71,7 @@ export const AuctionCard = ({
       return;
     }
 
-    onTimeUp(name);
+    onTimeUp(_id);
   }, [remainingTime]);
 
   return (

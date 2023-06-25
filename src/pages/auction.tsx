@@ -37,6 +37,7 @@ export default function Auction() {
           <div className="px-20 py-10">
             {data && (
               <AuctionCard
+                _id={data._id}
                 name={data.name}
                 startPrice={data.startPrice}
                 actualPrice={data.actualPrice}
@@ -44,7 +45,7 @@ export default function Auction() {
                 onBid={(newBid: number) => {
                   socket.emit("raise", {
                     newBidValue: newBid,
-                    name: data.name,
+                    id: data._id,
                     highestBidder: localStorage.getItem("name"),
                   });
                 }}
@@ -53,9 +54,9 @@ export default function Auction() {
                 sold={data.sold}
                 highestBidder={data.highestBidder}
                 lastBid={data.lastBid}
-                onTimeUp={(name: string) => {
+                onTimeUp={(id: string) => {
                   socket.emit("close-bid", {
-                    name: name,
+                    id: id,
                   });
                 }}
               />
