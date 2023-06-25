@@ -21,6 +21,7 @@ export interface IAcutionCard {
   sold: boolean;
   highestBidder: string;
   lastBid: string;
+  onTimeUp: (name: string) => void;
 }
 
 export const AuctionCard = ({
@@ -34,6 +35,7 @@ export const AuctionCard = ({
   highestBidder,
   sold,
   lastBid,
+  onTimeUp,
 }: IAcutionCard) => {
   const [bidValue, setBidValue] = useState<number>(0);
   const [remainingTime, setRemainingTime] = useState(0);
@@ -62,6 +64,14 @@ export const AuctionCard = ({
     };
   }, [lastBid]);
 
+  useEffect(() => {
+    if (remainingTime > 0) {
+      return;
+    }
+
+    onTimeUp(name);
+  }, [remainingTime]);
+
   return (
     <Card className="shadow-md !bg-amber-100">
       <CardHeader title={name} subheader={new Date().toDateString()} />
@@ -83,10 +93,21 @@ export const AuctionCard = ({
         >
           Highest bid: {highestBidder}
         </Typography>
-        <div>
+        <div className="flex flex-col">
           <span className={`${remainingTime % 60 < 20 && "text-red-500"}`}>
             Remaining time to bid: {remainingTime % 60}s
           </span>
+
+          {sold && (
+            <span
+              className={`max-h-24 overflow-y-auto ${
+                highestBidder === localStorage.getItem("name") &&
+                "text-green-600"
+              }`}
+            >
+              {name} has been sold! {highestBidder} won this auction!
+            </span>
+          )}
         </div>
       </CardContent>
       <div className="flex justify-between">

@@ -7,8 +7,8 @@ export default function Auction() {
   const [data, setData] = useState<IAcutionCard | undefined>();
   const [name, setName] = useState<string | null>(null);
   const socket = io("http://localhost:6060");
-
-  socket.on("send-data2", (auctionData) => {
+  // state ami megnezi, hogy van e valasza a socketnek, dep. array
+  socket.on("send-data-refreshed", (auctionData) => {
     setData(auctionData[0]);
   });
 
@@ -44,9 +44,8 @@ export default function Auction() {
                 onBid={(newBid: number) => {
                   socket.emit("raise", {
                     newBidValue: newBid,
-                    name: "Desk",
+                    name: data.name,
                     highestBidder: localStorage.getItem("name"),
-                    lastBid: new Date().toISOString(),
                   });
                 }}
                 description={data.description}
@@ -54,6 +53,11 @@ export default function Auction() {
                 sold={data.sold}
                 highestBidder={data.highestBidder}
                 lastBid={data.lastBid}
+                onTimeUp={(name: string) => {
+                  socket.emit("close-bid", {
+                    name: name,
+                  });
+                }}
               />
             )}
           </div>
