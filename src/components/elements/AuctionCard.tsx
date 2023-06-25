@@ -40,9 +40,12 @@ export const AuctionCard = ({
   onTimeUp,
 }: IAcutionCard) => {
   const [bidValue, setBidValue] = useState<number>(0);
-  const [remainingTime, setRemainingTime] = useState(0);
+  const [remainingTime, setRemainingTime] = useState(600000000);
 
   useEffect(() => {
+    if (lastBid === "") {
+      return;
+    }
     const interval = setInterval(() => {
       const currentTime = new Date().getTime();
       const targetTime = new Date(lastBid).getTime() + 60000;
@@ -96,9 +99,11 @@ export const AuctionCard = ({
           Highest bid: {highestBidder}
         </Typography>
         <div className="flex flex-col">
-          <span className={`${remainingTime % 60 < 20 && "text-red-500"}`}>
-            Remaining time to bid: {remainingTime % 60}s
-          </span>
+          {lastBid !== "" && (
+            <span className={`${remainingTime % 60 < 20 && "text-red-500"}`}>
+              Remaining time to bid: {remainingTime % 60}s
+            </span>
+          )}
 
           {sold && (
             <span
@@ -141,14 +146,16 @@ export const AuctionCard = ({
             }}
             disabled={disabled || sold}
           />
-          <IconButton
-            className="!rounded-sm !mx-4"
-            onClick={() => {
-              onBid(bidValue);
-            }}
-          >
-            Bid
-          </IconButton>
+          {!disabled && !sold && (
+            <IconButton
+              className="!rounded-sm !mx-4"
+              onClick={() => {
+                onBid(bidValue);
+              }}
+            >
+              Bid
+            </IconButton>
+          )}
         </CardActions>
       </div>
     </Card>

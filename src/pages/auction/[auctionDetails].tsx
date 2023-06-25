@@ -1,25 +1,45 @@
 import { AuctionCard, IAcutionCard } from "@/components/elements/AuctionCard";
 import { Layout } from "@/components/layout/Layout";
-import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { io, Socket } from "socket.io-client";
 
 export default function Auction() {
   const [data, setData] = useState<IAcutionCard | undefined>();
   const [name, setName] = useState<string | null>(null);
-  const socket = io("http://localhost:6060");
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const router = useRouter();
+
   // state ami megnezi, hogy van e valasza a socketnek, dep. array
-  socket.on("send-data-refreshed", (auctionData) => {
-    setData(auctionData[0]);
-  });
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to the server");
-    });
-    socket.on("send-data", (auctionData) => {
-      setData(auctionData[0]);
-    });
+    socketInitializer();
+
+    return () => {
+      socket && socket.disconnect();
+    };
   }, []);
+
+  async function socketInitializer() {
+    await fetch("/api/socket");
+
+    setSocket(io("http://localhost:6060"));
+  }
+
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+    socket.connect();
+
+    socket.emit("join-room", { roomId: router.asPath.split("/").pop() });
+    // socket.emit("get-data", {
+    //   id: router.asPath.split("/").pop(),
+    // });
+    socket.on("send-data-refreshed", (auctionData: any) => {
+      setData(auctionData);
+    });
+  }, [socket]);
 
   useEffect(() => {
     setName(localStorage.getItem("name"));
@@ -43,6 +63,11 @@ export default function Auction() {
                 actualPrice={data.actualPrice}
                 thumbnail={data.thumbnail}
                 onBid={(newBid: number) => {
+                  console.log(socket);
+                  if (!socket) {
+                    return;
+                  }
+                  console.log(newBid);
                   socket.emit("raise", {
                     newBidValue: newBid,
                     id: data._id,
@@ -55,6 +80,10 @@ export default function Auction() {
                 highestBidder={data.highestBidder}
                 lastBid={data.lastBid}
                 onTimeUp={(id: string) => {
+                  if (!socket) {
+                    return;
+                  }
+
                   socket.emit("close-bid", {
                     id: id,
                   });

@@ -21,7 +21,7 @@ export type MessageProps = {
 export default function Home() {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [message, setMessage] = useState<string>("");
-  const socket = io("http://localhost:6060");
+  const socket = io("http://localhost:6060", { addTrailingSlash: false });
 
   useEffect(() => {
     socket.connect();
