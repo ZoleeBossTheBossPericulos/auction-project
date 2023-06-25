@@ -7,6 +7,7 @@ import itemRoutes from "./routes/items";
 import { socketFunctions } from "./sockets/socketFunctions";
 import { Server } from "socket.io";
 import { consumeMessages } from "./broker/rabbitmq";
+import { MongoClient } from "mongodb";
 
 const router: Express = express();
 
@@ -47,7 +48,11 @@ export const io = new Server(httpServer, {
   },
 });
 
-socketFunctions(io).catch(console.error);
+const uri =
+  "mongodb+srv://test:test@valosweb-cluster.9bo7mqx.mongodb.net/?retryWrites=true&w=majority";
+const client = new MongoClient(uri);
+
+socketFunctions(io, client).catch(console.error);
 consumeMessages(io).catch(console.error);
 
 httpServer.listen(PORT, () =>

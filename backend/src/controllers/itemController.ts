@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 const uri =
   "mongodb+srv://test:test@valosweb-cluster.9bo7mqx.mongodb.net/?retryWrites=true&w=majority";
@@ -54,93 +54,31 @@ const getCurrentAuction = async (
   }
 };
 
-// updating a post
-const updateMember = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const client = new MongoClient(uri);
-  try {
-    const database = client.db("Gym");
-    const movies = database.collection("Members");
-
-    const movie = await movies
-      .find(
-        { name: req.body.name },
-        {
-          limit: 10,
-        }
-      )
-      .toArray();
-
-    return res.status(200).json({
-      data: movie,
-    });
-  } finally {
-    await client.close();
-  }
-};
-
-// adding a post
-const addMember = async (req: Request, res: Response, next: NextFunction) => {
-  const client = new MongoClient(uri);
-  try {
-    const database = client.db("Gym");
-    const movies = database.collection("Members");
-
-    const movie = await movies
-      .find(
-        { name: req.body.name },
-        {
-          limit: 10,
-        }
-      )
-      .toArray();
-
-    return res.status(200).json({
-      data: movie,
-    });
-  } finally {
-    await client.close();
-  }
-};
-
-const fetchCurrentAuction = async () => {
-  const client = new MongoClient(uri);
+const fetchCurrentAuction = async (client: MongoClient, id: string) => {
   try {
     const database = client.db("auction");
     const items = database.collection("items");
 
-    const item = await items
-      .find(
-        {},
-        {
-          limit: 1,
-        }
-      )
-      .toArray();
+    const item = await items.findOne({ _id: new ObjectId(id) });
 
     return item;
   } catch (err) {
     console.log(err);
-  } finally {
-    await client.close();
   }
 };
 
 const updateBid = async (
-  name: string,
+  client: MongoClient,
+  id: string,
   newValue: number,
   highestBidder: string,
   lastBid: string
 ) => {
-  const client = new MongoClient(uri);
   try {
     const database = client.db("auction");
     const items = database.collection("items");
 
-    const filter = { name: name };
+    const filter = { _id: new ObjectId(id) };
     const update = {
       $set: {
         actualPrice: newValue,
@@ -152,16 +90,35 @@ const updateBid = async (
     await items.updateOne(filter, update);
 
     return;
-  } finally {
-    await client.close();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const closeBid = async (client: MongoClient, id: string) => {
+  try {
+    const database = client.db("auction");
+    const items = database.collection("items");
+
+    const filter = { _id: new ObjectId(id) };
+    const update = {
+      $set: {
+        sold: true,
+      },
+    };
+
+    await items.updateOne(filter, update);
+
+    return;
+  } catch (err) {
+    console.log(err);
   }
 };
 
 export default {
-  addMember,
-  updateMember,
   getCurrentAuction,
   getItems,
   updateBid,
   fetchCurrentAuction,
+  closeBid,
 };
