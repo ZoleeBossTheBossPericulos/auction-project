@@ -1,6 +1,6 @@
 import { MessageProps } from "@/pages/chat";
 import { IconButton, TextField } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChatBubble } from "./ChatBubble";
 
 type ChatSectionProps = {
@@ -17,20 +17,31 @@ const ChatSection: React.FC<ChatSectionProps> = ({
   message,
 }) => {
   const [name, setName] = useState<string | null>(null);
+  const containerRef = useRef<any>(null);
   useEffect(() => {
     setName(localStorage.getItem("name"));
   }, [localStorage]);
 
+  useEffect(() => {
+    const containerElement = containerRef.current;
+    if (containerElement)
+      containerElement.scrollTop = containerElement.scrollHeight;
+  }, [messages]);
+
   return (
     <div className="flex flex-col px-10 min-h-[80vh] justify-between">
       <h1 className="text-xl font-bold mb-2">Chat section</h1>
-      <div className="flex flex-col max-h-[55vh] gap-1 overflow-y-auto px-2">
+      <div
+        className="relative flex flex-col max-h-[55vh] gap-1 overflow-y-auto px-2"
+        ref={containerRef}
+      >
         {messages.map((message, index) => (
           <ChatBubble
             key={index}
             from={message.from}
             message={message.message}
             color={message.color}
+            isMine={message.from === name}
           />
         ))}
       </div>

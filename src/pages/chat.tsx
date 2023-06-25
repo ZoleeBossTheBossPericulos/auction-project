@@ -3,15 +3,6 @@ import { Layout } from "@/components/layout/Layout";
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const generateRandomColor = () => {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
 export type MessageProps = {
   from: string;
   message: string;
@@ -21,7 +12,7 @@ export type MessageProps = {
 export default function Home() {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [message, setMessage] = useState<string>("");
-  const socket = io("http://localhost:6060", { addTrailingSlash: false });
+  const socket = io("http://localhost:6060");
 
   useEffect(() => {
     socket.connect();
@@ -45,7 +36,7 @@ export default function Home() {
             socket.emit("send-message", {
               message: message,
               from: localStorage.getItem("name"),
-              color: generateRandomColor(),
+              color: localStorage.getItem("chatColor"),
             });
             setMessage("");
           }}
