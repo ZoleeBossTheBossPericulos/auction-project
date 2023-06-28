@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export interface IAcutionCard {
   _id: string;
@@ -21,13 +21,12 @@ export interface IAcutionCard {
   disabled: boolean;
   sold: boolean;
   highestBidder: string;
-  lastBid: string;
+  lastBid: number;
   onTimeUp: (name: string) => void;
 }
 
 export const AuctionCard = ({
   actualPrice,
-  _id,
   name,
   startPrice,
   thumbnail,
@@ -37,45 +36,8 @@ export const AuctionCard = ({
   highestBidder,
   sold,
   lastBid,
-  onTimeUp,
 }: IAcutionCard) => {
   const [bidValue, setBidValue] = useState<number>(0);
-  const [remainingTime, setRemainingTime] = useState(600000000);
-
-  useEffect(() => {
-    if (lastBid === "") {
-      return;
-    }
-    const interval = setInterval(() => {
-      const currentTime = new Date().getTime();
-      const targetTime = new Date(lastBid).getTime() + 60000;
-      const difference = targetTime - currentTime;
-
-      if (difference > 0) {
-        const minutes = Math.floor(
-          (difference % (1000 * 60 * 60)) / (1000 * 60)
-        );
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-        setRemainingTime(minutes * 60 + seconds);
-      } else {
-        // Counter reached the target datetime
-        setRemainingTime(0);
-        clearInterval(interval);
-      }
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [lastBid]);
-
-  useEffect(() => {
-    if (remainingTime > 0) {
-      return;
-    }
-
-    onTimeUp(_id);
-  }, [remainingTime]);
 
   return (
     <Card className="shadow-md !bg-amber-100">
@@ -99,9 +61,9 @@ export const AuctionCard = ({
           Highest bid: {highestBidder}
         </Typography>
         <div className="flex flex-col">
-          {lastBid !== "" && (
-            <span className={`${remainingTime % 60 < 20 && "text-red-500"}`}>
-              Remaining time to bid: {remainingTime % 60}s
+          {lastBid && (
+            <span className={`${lastBid % 60 < 20 && "text-red-500"}`}>
+              Remaining time to bid: {lastBid % 60}s
             </span>
           )}
 

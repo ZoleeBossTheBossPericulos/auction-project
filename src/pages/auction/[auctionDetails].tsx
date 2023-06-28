@@ -63,11 +63,9 @@ export default function Auction() {
                 actualPrice={data.actualPrice}
                 thumbnail={data.thumbnail}
                 onBid={(newBid: number) => {
-                  console.log(socket);
                   if (!socket) {
                     return;
                   }
-                  console.log(newBid);
                   socket.emit("raise", {
                     newBidValue: newBid,
                     id: data._id,
