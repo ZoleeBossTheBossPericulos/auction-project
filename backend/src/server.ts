@@ -2,6 +2,7 @@
 import http from "http";
 import express, { Express } from "express";
 import morgan from "morgan";
+import { createClient } from "redis";
 import itemRoutes from "./routes/items";
 
 import { socketFunctions } from "./sockets/socketFunctions";
@@ -51,8 +52,9 @@ export const io = new Server(httpServer, {
 const uri =
   "mongodb+srv://test:test@valosweb-cluster.9bo7mqx.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
+const redisCli = createClient();
 
-socketFunctions(io, client).catch(console.error);
+socketFunctions(io, client, redisCli).catch(console.error);
 consumeMessages(io).catch(console.error);
 
 httpServer.listen(PORT, () =>

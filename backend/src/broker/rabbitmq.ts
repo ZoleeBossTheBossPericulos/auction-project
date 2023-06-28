@@ -1,6 +1,9 @@
 import amqp from "amqplib";
 import { Server } from "socket.io";
 
+const exchange = "chat";
+const queue = "chat_queue";
+
 const consumeMessages = async (io: Server) => {
   const connection = await amqp.connect(
     {},
@@ -13,13 +16,13 @@ const consumeMessages = async (io: Server) => {
 
   const channel = await connection.createChannel();
 
-  const queue = "chat_queue";
-
+  await channel.assertExchange(exchange, "fanout");
   await channel.assertQueue(queue, { durable: false });
+  await channel.bindQueue(queue, exchange, "");
+
   await channel.consume(queue, (message) => {
     if (message !== null) {
       const content = JSON.parse(message.content.toString());
-      console.log("Message received:", content);
 
       if (typeof content !== "string") {
         io.emit("chatMessage", content);
@@ -41,14 +44,8 @@ const sendMessage = async (message) => {
   );
 
   const channel = await connection.createChannel();
-
-  const queue = "chat_queue";
-
-  await channel.assertQueue(queue, { durable: false });
-  console.log(message);
-  channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
-
-  console.log("Message sent:", message);
+  await channel.assertExchange(exchange, "fanout");
+  channel.publish(exchange, "", Buffer.from(JSON.stringify(message)));
 
   await channel.close();
   await connection.close();
