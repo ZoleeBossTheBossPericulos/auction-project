@@ -61,7 +61,7 @@ export const AuctionCard = ({
           Highest bid: {highestBidder}
         </Typography>
         <div className="flex flex-col">
-          {lastBid && (
+          {lastBid && !isNaN(lastBid % 60) && (
             <span className={`${lastBid % 60 < 20 && "text-red-500"}`}>
               Remaining time to bid: {lastBid % 60}s
             </span>
