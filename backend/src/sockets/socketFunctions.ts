@@ -31,10 +31,6 @@ function startInterval(
     if (difference > 0) {
       const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-      console.log({
-        ...data,
-        lastBid: minutes * 60 + seconds,
-      });
 
       socket.to(id).emit("send-data-refreshed", {
         ...data,
